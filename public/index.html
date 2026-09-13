@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0d1117">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>Edward</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ===== ЭКРАН ВХОДА / РЕГИСТРАЦИИ ===== -->
+<div id="auth-screen" class="screen">
+  <div class="auth-card">
+    <div class="logo"><span>edward</span><span class="accent">.</span></div>
+
+    <div class="auth-tabs">
+      <button class="auth-tab active" data-form="login">Вход</button>
+      <button class="auth-tab" data-form="register">Регистрация</button>
+    </div>
+
+    <form id="login-form" class="auth-form">
+      <input type="text" id="login-login" placeholder="Логин или почта" autocomplete="username" required>
+      <input type="password" id="login-password" placeholder="Пароль" autocomplete="current-password" required>
+      <button type="submit" class="btn-primary">Войти</button>
+    </form>
+
+    <form id="register-form" class="auth-form hidden">
+      <input type="text" id="reg-username" placeholder="Логин" required>
+      <input type="email" id="reg-email" placeholder="Почта" required>
+      <input type="password" id="reg-password" placeholder="Пароль" required>
+      <button type="submit" class="btn-primary">Создать аккаунт</button>
+    </form>
+
+    <div id="auth-error" class="auth-error hidden"></div>
+    <div id="auth-server-hint" class="server-hint">Подключение к серверу этого устройства…</div>
+  </div>
+</div>
+
+<!-- ===== ОСНОВНОЙ ЭКРАН ===== -->
+<div id="app-screen" class="screen hidden">
+  <header class="topbar">
+    <div class="logo"><span>edward</span><span class="accent">.</span></div>
+    <button id="new-chat-btn" class="icon-btn">＋</button>
+  </header>
+
+  <nav class="tabs">
+    <button class="tab active" data-tab="chats">Чаты</button>
+    <button class="tab" data-tab="people">Люди</button>
+    <button class="tab" data-tab="settings">Настройки</button>
+  </nav>
+
+  <!-- Чаты -->
+  <section id="tab-chats" class="tab-content">
+    <div class="search-bar"><span>🔍</span><input placeholder="Поиск по чатам" id="chats-search"></div>
+    <div id="chats-list" class="list"></div>
+    <div id="chats-empty" class="empty-hint hidden">Пока нет чатов. Перейдите во вкладку «Люди» и найдите собеседника.</div>
+  </section>
+
+  <!-- Люди -->
+  <section id="tab-people" class="tab-content hidden">
+    <div class="search-bar"><span>🔍</span><input placeholder="Найти пользователя" id="people-search"></div>
+    <div id="people-list" class="list"></div>
+  </section>
+
+  <!-- Настройки -->
+  <section id="tab-settings" class="tab-content hidden">
+    <div class="profile-card">
+      <div class="avatar-wrap">
+        <div id="my-avatar" class="avatar big"></div>
+        <label class="avatar-edit" for="avatar-input">✎</label>
+        <input type="file" id="avatar-input" accept="image/*" class="hidden">
+      </div>
+      <div class="profile-name" id="my-username">—</div>
+      <div class="profile-sub" id="my-email">—</div>
+      <input id="my-bio" class="bio-input" placeholder="Статус / о себе" maxlength="60">
+    </div>
+
+    <div class="settings-group">
+      <button class="settings-row" id="about-btn">
+        <span>ℹ️ О приложении</span><span>›</span>
+      </button>
+    </div>
+
+    <button id="logout-btn" class="logout-btn">Выйти из аккаунта</button>
+  </section>
+</div>
+
+<!-- ===== ЭКРАН ЧАТА ===== -->
+<div id="chat-screen" class="screen hidden">
+  <header class="chat-topbar">
+    <button id="chat-back" class="icon-btn">←</button>
+    <div id="chat-peer-avatar" class="avatar small"></div>
+    <div class="chat-peer-info">
+      <div id="chat-peer-name" class="chat-peer-name">—</div>
+      <div id="chat-peer-status" class="chat-peer-status">офлайн</div>
+    </div>
+    <button id="call-audio-btn" class="icon-btn">📞</button>
+    <button id="call-video-btn" class="icon-btn">🎥</button>
+  </header>
+  <div id="messages-list" class="messages-list"></div>
+  <form id="message-form" class="message-form">
+    <input id="message-input" placeholder="Сообщение…" autocomplete="off">
+    <button type="submit" class="send-btn">➤</button>
+  </form>
+</div>
+
+<!-- ===== МОДАЛКИ ===== -->
+<div id="modal-backdrop" class="modal-backdrop hidden"></div>
+
+<div id="about-modal" class="modal hidden">
+  <h3>О приложении</h3>
+  <p class="modal-hint">Edward — приватный мессенджер только для двоих. Работает через ваш собственный сервер, никуда не выгружается.</p>
+  <button class="btn-primary" data-close>Понятно</button>
+</div>
+
+<!-- Звонок -->
+<div id="call-screen" class="screen hidden">
+  <div class="call-info">
+    <div id="call-peer-avatar" class="avatar big"></div>
+    <div id="call-peer-name" class="call-peer-name">—</div>
+    <div id="call-status" class="call-status">Вызов…</div>
+  </div>
+  <video id="remote-video" autoplay playsinline class="remote-video"></video>
+  <video id="local-video" autoplay playsinline muted class="local-video"></video>
+  <div class="call-controls">
+    <button id="toggle-mic-btn" class="call-btn">🎙️</button>
+    <button id="toggle-cam-btn" class="call-btn">🎥</button>
+    <button id="hangup-btn" class="call-btn danger">📵</button>
+  </div>
+</div>
+
+<div id="incoming-call-modal" class="modal hidden">
+  <div id="incoming-avatar" class="avatar big"></div>
+  <h3 id="incoming-name">—</h3>
+  <p class="modal-hint" id="incoming-type">Входящий звонок…</p>
+  <div class="incoming-actions">
+    <button id="reject-call-btn" class="call-btn danger">✕</button>
+    <button id="accept-call-btn" class="call-btn accept">✓</button>
+  </div>
+</div>
+
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
